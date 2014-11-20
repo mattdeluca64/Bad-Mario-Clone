@@ -105,10 +105,6 @@ public class Mario extends SimpleBaseGameActivity implements IAccelerationListen
 	//settings - values
 	private static float GRAVITY = 25.0f;
 	//PlayerFlags
-	private static boolean DIRECTION=true;//true right, false left
-	private static boolean SKIDDING=false;
-	private static boolean RUNNING=false;
-	private static boolean JUMPING=false;
 	private static boolean BUTTON4=false;
 	private static ArrayList<TMXLayer> LAYERS;
 	private static TMXTile[][] TILES;
