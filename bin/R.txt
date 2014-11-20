@@ -1,0 +1,5 @@
+int array new_in_version_changes 0x7f050001
+int array new_in_version_versioncode 0x7f050000
+int drawable icon 0x7f020000
+int string app_name 0x7f030000
+int style AppTheme 0x7f040000

@@ -1,0 +1,3 @@
+#!/bin/bash
+ant debug
+adb install -r bin/Games-debug.apk
