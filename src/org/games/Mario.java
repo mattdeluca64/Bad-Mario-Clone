@@ -102,15 +102,8 @@ import android.graphics.Typeface;
 public class Mario extends SimpleBaseGameActivity implements IAccelerationListener, IOnSceneTouchListener {
 	private static final int CAMERA_WIDTH = 480;
 	private static final int CAMERA_HEIGHT = 320;
-	private static int RUNANIMATION = 0;
-
 	//settings - values
 	private static float GRAVITY = 25.0f;
-	private static float RUNSPEED = 15.0f;
-	private static float MAXSPEED = 9.0f;
-	private static float WALL_FRICTION = 0.45f;
-	private static float PLAYER_FRICTION = 0.45f;
-
 	//PlayerFlags
 	private static boolean DIRECTION=true;//true right, false left
 	private static boolean SKIDDING=false;
@@ -120,14 +113,15 @@ public class Mario extends SimpleBaseGameActivity implements IAccelerationListen
 	private static ArrayList<TMXLayer> LAYERS;
 	private static TMXTile[][] TILES;
 	//-----------------------------------------------------------------------------------------------------------
+	//Wall Collides with Player
+	//...PLAYER_DEF defined in xml/mario.xml, but not sure exactly what its definition is!
 	public static final short CATEGORYBIT_WALL = 1;
 	public static final short CATEGORYBIT_PLAYER = 2;
-	public static final short MASKBITS_WALL = CATEGORYBIT_PLAYER; //CATEGORYBIT_PLAYER + CATEGORYBIT_WALL;
-	public static final short MASKBITS_PLAYER = CATEGORYBIT_PLAYER;
+	public static final short MASKBITS_WALL = CATEGORYBIT_PLAYER; 
+	
+	//(...,float Mass,float Elasticity,float friction...)
 	public static final FixtureDef WALL_FIXTURE_DEF = PhysicsFactory.createFixtureDef(
-			1, 0.0f, WALL_FRICTION, false, CATEGORYBIT_WALL, MASKBITS_WALL, (short)0);
-	public static final FixtureDef PLAYER_FIXTURE_DEF = PhysicsFactory.createFixtureDef(
-			1.0f, 0.0f, PLAYER_FRICTION, false, CATEGORYBIT_PLAYER, MASKBITS_PLAYER, (short)0);
+			1, 0.0f, 0.45f, false, CATEGORYBIT_WALL, MASKBITS_WALL, (short)0);
 	//-----------------------------------------------------------------------------------------------------------
 	private String message;
 	public Scene scene;
@@ -191,6 +185,7 @@ public class Mario extends SimpleBaseGameActivity implements IAccelerationListen
 		return this.scene;
 	}
 	//***********************************************************************************************************
+	//need these for something im importing...
 	@Override
 	public void onAccelerationAccuracyChanged(final AccelerationData pAccelerationData) { }
 	@Override
@@ -203,24 +198,24 @@ public class Mario extends SimpleBaseGameActivity implements IAccelerationListen
 	@Override
 	public void onPauseGame() {
 		super.onPauseGame();
-
-		this.disableAccelerationSensor();
+		//this.disableAccelerationSensor();
 	}
 	@Override
 	public void onResumeGame() {
 		super.onResumeGame();
-
-		this.enableAccelerationSensor(this);
+		//this.enableAccelerationSensor(this);
 	}
 
-	//*******************************************************************************************************************************************************************************
+	//**********************************************************************************************************************
 	//SCENE TOUCH
-	//*******************************************************************************************************************************************************************************
+	//**********************************************************************************************************************
 	@Override
 	public boolean onSceneTouchEvent(final Scene scene, final TouchEvent touch) {
 		return false;
 	}
-	//*******************************************************************************************************************************************************************************
+	//********************************************************************************************************************
+	//OPTIONS
+	//********************************************************************************************************************
 	@Override
 	public EngineOptions onCreateEngineOptions() {
 		//Toast.makeText(this, "Collect Canada Coins!.", Toast.LENGTH_LONG).show();
@@ -234,7 +229,9 @@ public class Mario extends SimpleBaseGameActivity implements IAccelerationListen
 		engineOptions.getTouchOptions().setNeedsMultiTouch(true);
 		return engineOptions;
 	}
-	//*******************************************************************************************************************************************************************************
+	//*************************************************************************************************************************
+	//My Methods
+	//*************************************************************************************************************************
 	public void popup(String message){
 		this.message = message;
 		this.runOnUiThread(new Runnable() {
@@ -248,8 +245,7 @@ public class Mario extends SimpleBaseGameActivity implements IAccelerationListen
 			}
 		});
 	}
-	//*******************************************************************************************************************************************************************************
-	//*******************************************************************************************************************************************************************************
+	//***********************************************************************************************************************
 	private ContactListener createContactListener(){
 		ContactListener contactListener = new ContactListener(){
 			@Override
@@ -273,14 +269,14 @@ public class Mario extends SimpleBaseGameActivity implements IAccelerationListen
 		};
 		return contactListener;
 	}
-	//*******************************************************************************************************************************************************************************
+	//************************************************************************************************************************
 	public void addBounds(TMXLayer layer){
 		this.addWall(0,0,layer.getWidth(),0);
 		this.addWall(0,layer.getHeight(),layer.getWidth(),0);
 		this.addWall(0,0,0,layer.getHeight());
 		this.addWall(layer.getWidth(),0,0,layer.getHeight());
 	}
-	//*******************************************************************************************************************************************************************************
+	//************************************************************************************************************************
 	public void addCoin(TMXTile tile){
 		final AnimatedSprite coin = new AnimatedSprite(tile.getTileX(), tile.getTileY(), 
 				this.CoinTexture, this.getVertexBufferObjectManager()){
@@ -302,7 +298,9 @@ public class Mario extends SimpleBaseGameActivity implements IAccelerationListen
 		coin.animate(100);
 		this.scene.getChildByIndex(1).attachChild(coin);
 	}
-
+	//************************************************************************************************************************
+	//this finds all tiles with type==ground
+	//and loops through and finds horizontal groups, and makes it one big physics rectangle
 	public void computeFloors(String type){
 		this.LAYERS = this.map.getTMXLayers();
 		this.TILES =  this.LAYERS.get(2).getTMXTiles();
@@ -339,7 +337,8 @@ public class Mario extends SimpleBaseGameActivity implements IAccelerationListen
 			}
 		}
 	}
-	//*******************************************************************************************************************************************************************************
+	//************************************************************************************************************************
+	//Make a physics rectangle/box with userdata "ground"
 	public void addGround(int x,int y,int w,int h){
 		final Rectangle box = new Rectangle( x,y,w,h,this.getVertexBufferObjectManager());
 		//box.setColor(1.0f,0.0f,1.0f,1.0f);
@@ -350,7 +349,8 @@ public class Mario extends SimpleBaseGameActivity implements IAccelerationListen
 		floor.setUserData("ground");
 		this.scene.getChildByIndex(1).attachChild(box);
 	}
-	//*******************************************************************************************************************************************************************************
+	//************************************************************************************************************************
+	//Make a physics rectangle/box with userdata "wall"
 	public void addWall(int x,int y,int w,int h){
 		final Rectangle box = new Rectangle( x,y,w,h,this.getVertexBufferObjectManager());
 		box.setVisible(false);
@@ -359,7 +359,7 @@ public class Mario extends SimpleBaseGameActivity implements IAccelerationListen
 		floor.setUserData("wall");
 		this.scene.getChildByIndex(1).attachChild(box);
 	}
-	//*******************************************************************************************************************************************************************************
+	//********************************************************************************************************************
 	public void addBlock(int x,int y,int w,int h){
 		final Rectangle box = new Rectangle( x,y,w,h,this.getVertexBufferObjectManager());
 		box.setVisible(false);
@@ -368,6 +368,8 @@ public class Mario extends SimpleBaseGameActivity implements IAccelerationListen
 		floor.setUserData("wall");
 		this.scene.getChildByIndex(1).attachChild(box);
 	}
+	//********************************************************************************************************************
+	//all of these get userdata set as "wall"
 	public void addBlock(TMXTile tile){
 		final Rectangle box = new Rectangle(
 				tile.getTileX(), 
@@ -375,18 +377,17 @@ public class Mario extends SimpleBaseGameActivity implements IAccelerationListen
 				tile.getTileWidth(),
 				tile.getTileHeight(), 
 				this.getVertexBufferObjectManager());
-
 		//box.setColor(1.0f,1.0f,0.0f,1.0f);
 		//box.setVisible(true);
 		box.setVisible(false);
-
 		final Body floor = 
 			PhysicsFactory.createBoxBody(Mario.this.World, box, BodyType.StaticBody, WALL_FIXTURE_DEF);
 
 		floor.setUserData("wall");
 		this.scene.getChildByIndex(1).attachChild(box);
 	}
-	//*******************************************************************************************************************************************************************************
+	//************************************************************************************************************************
+	//moved all of this down here, hasn't changed much
 	public void initScene(){
 		this.mEngine.registerUpdateHandler(new FPSLogger());
 		this.scene = new Scene();
@@ -403,6 +404,13 @@ public class Mario extends SimpleBaseGameActivity implements IAccelerationListen
 		DebugRenderer debug = new DebugRenderer(this.World, this.getVertexBufferObjectManager());
 		this.scene.attachChild(debug);
 	}
+	//************************************************************************************************************************
+	//5 buttons
+	//button1 sends mario.Jump()
+	//buttons 2/3 left/right sends mario.Left() Right() respectively
+	//button 4 constantly adds upward force to mario...doesn't call/go thru the Player class
+	//button 5 just prints "hi" in a notification box
+	//************************************************************************************************************************
 	public void setupHUD(){
 		final Rectangle Button1 = new Rectangle(CAMERA_WIDTH - 60,CAMERA_HEIGHT - 60,60,60,this.getVertexBufferObjectManager()){
 			@Override
@@ -422,6 +430,7 @@ public class Mario extends SimpleBaseGameActivity implements IAccelerationListen
 				return true;
 			}
 		};
+	//*********************************************************************************
 		final Rectangle Button2 = new Rectangle(0,CAMERA_HEIGHT - 60,60,60,this.getVertexBufferObjectManager()){
 			@Override
 			public boolean onAreaTouched(TouchEvent touch, float x, float y){
@@ -440,6 +449,7 @@ public class Mario extends SimpleBaseGameActivity implements IAccelerationListen
 				return true;
 			}
 		};
+	//*********************************************************************************
 		final Rectangle Button3 = new Rectangle( 60,CAMERA_HEIGHT - 60,60,60,this.getVertexBufferObjectManager()){
 			@Override
 			public boolean onAreaTouched(TouchEvent touch, float x, float y){
@@ -458,6 +468,7 @@ public class Mario extends SimpleBaseGameActivity implements IAccelerationListen
 				return true;
 			}
 		};
+	//*********************************************************************************
 		final Rectangle Button4 = new Rectangle(CAMERA_WIDTH-60,0,60,60,this.getVertexBufferObjectManager()){
 			@Override
 			public boolean onAreaTouched(TouchEvent touch, float x, float y){
@@ -475,7 +486,6 @@ public class Mario extends SimpleBaseGameActivity implements IAccelerationListen
 				}
 				return true;
 			}
-			//************************************************************
 			@Override
 			protected void onManagedUpdate(float seconds){
 				if(BUTTON4){
@@ -485,6 +495,7 @@ public class Mario extends SimpleBaseGameActivity implements IAccelerationListen
 				super.onManagedUpdate(seconds);
 			}
 		};
+	//*********************************************************************************
 		final Rectangle Button5 = new Rectangle(CAMERA_WIDTH-120,0,60,60,this.getVertexBufferObjectManager()){
 			@Override
 			public boolean onAreaTouched(TouchEvent touch, float x, float y){
@@ -503,6 +514,8 @@ public class Mario extends SimpleBaseGameActivity implements IAccelerationListen
 				return true;
 			}
 		};
+	//*********************************************************************************
+	//set color, register touch area, bind to hud, add hud to scene
 		Button1.setColor(1.0f, 0.5f, 0.5f, 0.85f);
 		Button2.setColor(0.5f, 1.0f, 0.5f, 0.85f);
 		Button3.setColor(0.6f, 0.2f, 0.5f, 0.85f);
@@ -521,12 +534,18 @@ public class Mario extends SimpleBaseGameActivity implements IAccelerationListen
 		this.hud.attachChild(Button3);
 		this.hud.attachChild(Button4);
 		this.hud.attachChild(Button5);
+		//add the score to the hud
 		this.score.setText("Score: "+SCORE);
 		this.score.setColor(Color.RED);
 		this.hud.attachChild(this.score);
 		this.camera.setHUD(hud);
 	}
 }
+/*
+ *
+ * Various cut/paste from andengine examples / forum posts / my previous code used as examples/test
+ */
+
 /*
 	@Override
 	public void onManagedUpdate(final float pSecondsElapsed) {
