@@ -191,19 +191,19 @@ public class Mario{
 				Player.stopAnimation(4);
 			}else if (v.x>=0.0f && SKIDDING && ONGROUND){
 				SKIDDING=false;
-				Player.animate(new long[]{200,200},0,1,true);
+				walk();
 			}
 
 			if(RUNNING && ONGROUND){
-				if(v.x<RUNSPEED && v.x>0.0f && ONGROUND){
+				if(v.x<RUNSPEED && v.x>=0.0f && ONGROUND){
 					RUNNING=false;
-					Player.animate(new long[]{200,200},0,1,true);
+					walk();
 				}
 			}
 			if(!RUNNING && ONGROUND){
 				if(v.x>RUNSPEED && ONGROUND){
 					RUNNING=true;
-					Player.animate(new long[]{200,200},2,3,true);
+					run();
 				}
 			}
 		}
@@ -220,20 +220,20 @@ public class Mario{
 				Player.stopAnimation(10);
 			}else if (v.x<=0.0f && SKIDDING && ONGROUND){
 				SKIDDING=false;
-				Player.animate(new long[]{200,200},6,7,true);
+				walk();
 			}
 
 			if(RUNNING && ONGROUND){
 				if(v.x>-RUNSPEED && v.x<0.0f && ONGROUND){
 					RUNNING=false;
-					Player.animate(new long[]{200,200},6,7,true);
+					walk();
 				}
 			}
 
 			if(!RUNNING && ONGROUND){
 				if(v.x<-RUNSPEED && ONGROUND){
 					RUNNING=true;
-					Player.animate(new long[]{200,200},8,9,true);
+					run();
 				}
 			}
 		}
@@ -242,19 +242,29 @@ public class Mario{
 	//Actions & States
 	public void hitGround(){
 		ONGROUND=true;
-		if(DIRECTION && !JUMPING)
-			Player.setCurrentTileIndex(0);
-		else if(!DIRECTION && !JUMPING)
-			Player.setCurrentTileIndex(6);
-		if(DIRECTION && JUMPING && RIGHT){
-			JUMPING=false;
+		if(ONGROUND && !RUNNING && (LEFT || RIGHT)){
+			walk();
+		}
+		else if(ONGROUND && RUNNING && (LEFT || RIGHT)){
+			run();
+		}
+	}
+	public static void run(){
+		//Player.setCurrentTileIndex(6);
+		if(DIRECTION){
 			Player.animate(new long[]{200,200},2,3,true);
 		}
-		else if(!DIRECTION && LEFT && JUMPING){
-			JUMPING=false;
+		else if(!DIRECTION){
 			Player.animate(new long[]{200,200},8,9,true);
 		}
-
+	}
+	public static void walk(){
+		if(DIRECTION){
+			Player.animate(new long[]{200,200},0,1,true);
+		}
+		else if(!DIRECTION){
+			Player.animate(new long[]{200,200},6,7,true);
+		}
 	}
 	public void Jump(boolean state){
 		if(!state)
