@@ -1,0 +1,26 @@
+<TableLayout 
+	android:layout_width="fill_parent" 
+	android:layout_height="fill_parent" 
+	xmlns:android="http://schemas.android.com/apk/res/android">
+	<TableRow>
+		<TextView
+	    	android:text="Press Start"
+	    	android:layout_width="wrap_content"
+	    	android:layout_height="wrap_content"
+	    	android:layout_column="1" />
+	</TableRow>
+	<TableRow>
+		<Button 
+	    	android:id="@+id/startbutton"
+	    	android:text="Start"
+	    	android:layout_width="wrap_content"
+	    	android:layout_height="wrap_content"
+	    	android:layout_column="2" />
+		<Button 
+	    	android:id="@+id/settingsbutton"
+	    	android:text="Settings"
+	    	android:layout_width="wrap_content"
+	    	android:layout_height="wrap_content"
+	    	android:layout_column="3" />
+	</TableRow>
+</TableLayout>
