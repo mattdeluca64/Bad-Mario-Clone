@@ -149,22 +149,110 @@ public class LevelLoader{
 	private static ArrayList<TMXLayer> LAYERS;
 	public static final short CATEGORYBIT_WALL = 1;
 	public static final short CATEGORYBIT_PLAYER = 2;
-	public static final short MASKBITS_WALL = CATEGORYBIT_PLAYER; 
+	public static final short CATEGORYBIT_TOP = 4;
+	public static final short CATEGORYBIT_BOTTOM = 8;
+	public static final short MASKBITS_WALL = CATEGORYBIT_TOP + CATEGORYBIT_BOTTOM + CATEGORYBIT_PLAYER; 
 	//(...,float Mass,float Elasticity,float friction...)
+	//----------------------------------------------------------------------------------
 	public static final FixtureDef WALL_FIXTURE_DEF = PhysicsFactory.createFixtureDef(
 			1, 0.0f, 0.45f, false, CATEGORYBIT_WALL, MASKBITS_WALL, (short)0);
 	public static final FixtureDef BOX_FIXTURE_DEF = PhysicsFactory.createFixtureDef(
 			0.2f, 0.0f, 0.40f, false, CATEGORYBIT_WALL, MASKBITS_WALL, (short)0);
+	//----------------------------------------------------------------------------------
+	public static final FixtureDef BOTTOM_FIXTURE_DEF = PhysicsFactory.createFixtureDef(
+			0.0f, 0.4f, 0.00f, false, CATEGORYBIT_WALL, MASKBITS_WALL, (short)0);
 
+	public static final FixtureDef LEFT_FIXTURE_DEF = PhysicsFactory.createFixtureDef(
+			0.0f, 0.0f, 0.00f, false, CATEGORYBIT_WALL, MASKBITS_WALL, (short)0);
+
+	public static final FixtureDef RIGHT_FIXTURE_DEF = PhysicsFactory.createFixtureDef(
+			0.0f, 0.0f, 0.00f, false, CATEGORYBIT_WALL, MASKBITS_WALL, (short)0);
+
+	public static final FixtureDef TOP_FIXTURE_DEF = PhysicsFactory.createFixtureDef(
+			0.0f, 0.0f, 0.45f, false, CATEGORYBIT_WALL, MASKBITS_WALL, (short)0);
+
+	public static final FixtureDef BOXSENSOR_FIXTURE_DEF = PhysicsFactory.createFixtureDef(
+			0.0f, 0.0f, 0.45f, true, CATEGORYBIT_WALL, MASKBITS_WALL, (short)0);
+	//----------------------------------------------------------------------------------
 	public LevelLoader(final Game parent,final Engine engine,String file){
 		this.vbo = parent.getVertexBufferObjectManager();
 		this.loadResources(parent,engine);
-		if(file=="test"){
+		if(file=="test2"){
 			this.width = parent.CAMERA_WIDTH;
 			this.height = parent.CAMERA_HEIGHT;
 			this.addBounds(parent);
 			parent.camera.setBounds(0, 0, this.width,this.height);
 			parent.camera.setBoundsEnabled(true);
+			this.COLS = this.width / 32;
+			this.ROWS = this.height / 32;
+			new Brick(this.width / 2,this.height / 2,parent);
+			/*
+			//----------------------------------------------------------------------------------
+			final Rectangle box = new Rectangle( this.width / 2,this.height / 2 - 32,32,32,this.vbo);
+			box.setVisible(false);
+			//----------------------------------------------------------------------------------
+			final Body body = 
+				PhysicsFactory.createBoxBody(parent.World, box, BodyType.StaticBody, BOXSENSOR_FIXTURE_DEF);
+			//----------------------------------------------------------------------------------
+			//bottom
+			final PolygonShape shape1 = new PolygonShape();
+			final Vector2[] verts1 = new Vector2[]{
+				new Vector2(-0.45f,0.5f),
+				new Vector2(-0.45f,0.4f),
+				new Vector2(0.45f,0.4f),
+				new Vector2(0.45f,0.5f)};
+			shape1.set(verts1);
+			BOTTOM_FIXTURE_DEF.shape = shape1;
+			final Fixture bottom = body.createFixture(BOTTOM_FIXTURE_DEF);
+			//----------------------------------------------------------------------------------
+			//top
+			final PolygonShape shape = new PolygonShape();
+			final Vector2[] verts = new Vector2[]{
+				new Vector2(-0.45f,-0.4f),
+				new Vector2(-0.45f,-0.5f),
+				new Vector2(0.45f,-0.5f),
+				new Vector2(0.45f,-0.4f)};
+			shape.set(verts);
+			TOP_FIXTURE_DEF.shape = shape;
+			final Fixture top = body.createFixture(TOP_FIXTURE_DEF);
+			//----------------------------------------------------------------------------------
+			//left
+			final PolygonShape shape3 = new PolygonShape();
+			final Vector2[] verts3 = new Vector2[]{
+				new Vector2(-0.5f,0.5f),
+				new Vector2(-0.5f,-0.5f),
+				new Vector2(-0.45f,-0.5f),
+				new Vector2(-0.45f,0.5f)};
+			shape3.set(verts3);
+			LEFT_FIXTURE_DEF.shape = shape3;
+			final Fixture left = body.createFixture(LEFT_FIXTURE_DEF);
+			shape.dispose();
+			//----------------------------------------------------------------------------------
+			//right
+			final PolygonShape shape4 = new PolygonShape();
+			final Vector2[] verts4 = new Vector2[]{
+				new Vector2(0.45f,0.5f),
+				new Vector2(0.45f,-0.5f),
+				new Vector2(0.5f,-0.5f),
+				new Vector2(0.5f,0.5f)};
+			shape4.set(verts4);
+			RIGHT_FIXTURE_DEF.shape = shape4;
+			final Fixture right = body.createFixture(RIGHT_FIXTURE_DEF);
+			//----------------------------------------------------------------------------------
+			body.setUserData("block");
+			parent.scene.getChildByIndex(1).attachChild(box);
+			shape1.dispose();
+			//----------------------------------------------------------------------------------
+			*/
+		}
+		else if(file=="test"){
+			this.width = parent.CAMERA_WIDTH;
+			this.height = parent.CAMERA_HEIGHT;
+			this.addBounds(parent);
+			parent.camera.setBounds(0, 0, this.width,this.height);
+			parent.camera.setBoundsEnabled(true);
+			this.COLS = this.width / 32;
+			this.ROWS = this.height / 32;
 			//addBlock(this.width / 2,0,parent,"note");
 			//addBlock(this.width / 2,0,32,32,parent);
 			new Note(this.width / 2, 96,parent);
@@ -181,8 +269,6 @@ public class LevelLoader{
 			*/
 
 
-			this.COLS = this.width / 32;
-			this.ROWS = this.height / 32;
 		}else{
 			try{
 				TMXLoader tmxLoader = new TMXLoader( 
@@ -198,26 +284,21 @@ public class LevelLoader{
 										int x = tile.getTileX();
 										int y = tile.getTileY();
 										if(props.containsTMXProperty("item", "coin")) {
-											//addCoin(parent,tile);
 											new Coin(x,y,parent,engine);
 										}
 										else if(props.containsTMXProperty("type", "coin")) {
-											//addCoin(parent,tile);
 											new Coin(x,y,parent,engine);
 										}
 										else if(props.containsTMXProperty("block", "itemblock")) {
-											//addBlock(tile,"block",parent);
 											new ItemBlock(x,y,parent);
 										}
 										else if(props.containsTMXProperty("block", "wood")) {
-											addBlock(tile,"block",parent);
+											new WoodBlock(x,y,parent);
 										}
 										else if(props.containsTMXProperty("block", "brick2")) {
-											//addBlock(tile,"block",parent);
 											new Brick(x,y,parent);
 										}
 										else if(props.containsTMXProperty("block", "brick1")) {
-											//addBlock(tile,"block",parent);
 											new Brick(x,y,parent);
 										}
 										else if(props.containsTMXProperty("block", "ice")) {
@@ -230,14 +311,13 @@ public class LevelLoader{
 											new GreyBrick(x,y,parent);
 										}
 										else if(props.containsTMXProperty("block", "blank")) {
-											addBlock(tile,"block",parent);
+											new BlankBlock(x,y,parent);
 										}
 										else if(props.containsTMXProperty("block", "note")) {
-											//addBlock(tile,"block",parent);
 											new Note(x,y,parent);
 										}
 										else if(props.containsTMXProperty("block", "stone")) { 
-											//addBlock(tile,"wall",parent);
+											//this is gonna be the floor
 										}
 										else{ }
 									}

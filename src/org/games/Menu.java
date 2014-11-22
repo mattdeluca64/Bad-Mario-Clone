@@ -17,21 +17,12 @@ public class Menu extends Activity{
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		/*
-		Button button = new Button(this);
-		button.setText("OMG");
-		button.setOnClickListener(new OnClickListener(){
-			@Override
-			public void onClick(View v){
-				Menu.this.startActivity(new Intent(Menu.this, Template.class));
-				Menu.this.finish();
-			}
-		});
-		setContentView(button);
-		*/
+		//-------------------------------------------------------
 		setContentView(R.layout.menu_layout);
+		//-------------------------------------------------------
 		Button settingsButton = (Button)findViewById(R.id.settingsbutton);
 		Button startButton = (Button)findViewById(R.id.startbutton);
+		//-------------------------------------------------------
 		startButton.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
@@ -39,5 +30,6 @@ public class Menu extends Activity{
 				Menu.this.finish();
 			}
 		});
+		//-------------------------------------------------------
 	}
 }

@@ -90,6 +90,7 @@ public class Mario{
 	private static boolean DIRECTION;
 	private static boolean LEFT;
 	private static boolean RIGHT;
+	private static boolean TOGGLE = false;
 	//-------------------------------
 	//Constants
 	private static final float MOVEMENT = 11.8f;
@@ -146,20 +147,36 @@ public class Mario{
 			new Vector2(0.25f,0.4f),
 			new Vector2(0.25f,0.51f)};
 		shape.set(verts);
-
+		final PolygonShape shape1 = new PolygonShape();
+		final Vector2[] verts1 = new Vector2[]{
+			new Vector2(-0.25f,-0.3f),
+			new Vector2(-0.25f,-0.4f),
+			new Vector2(0.25f,-0.4f),
+			new Vector2(0.25f,-0.3f)};
+		shape1.set(verts1);
 		final short CATEGORYBIT_WALL = 1;
 		final short CATEGORYBIT_PLAYER = 2;
-		final short MASKBITS_WALL = CATEGORYBIT_PLAYER; 
-		final short MASKBITS_PLAYER = CATEGORYBIT_PLAYER + CATEGORYBIT_WALL; 
+		final short CATEGORYBIT_TOP = 4;
+		final short CATEGORYBIT_BOTTOM = 8;
+		final short MASKBITS_HEAD = CATEGORYBIT_BOTTOM;
+		final short MASKBITS_FOOT = CATEGORYBIT_TOP + CATEGORYBIT_WALL;
+		final short MASKBITS_WALL = CATEGORYBIT_BOTTOM + CATEGORYBIT_PLAYER; 
+		final short MASKBITS_PLAYER = CATEGORYBIT_BOTTOM + CATEGORYBIT_TOP+CATEGORYBIT_PLAYER + CATEGORYBIT_WALL; 
+		final FixtureDef HEAD_FIXTURE_DEF = PhysicsFactory.createFixtureDef(
+			0, 0.0f, 0.00f, true, CATEGORYBIT_PLAYER, MASKBITS_HEAD, (short)0);
 		final FixtureDef FOOT_FIXTURE_DEF = PhysicsFactory.createFixtureDef(
-			0, 0.0f, 0.00f, true, CATEGORYBIT_PLAYER, MASKBITS_PLAYER, (short)0);
+			0, 0.0f, 0.00f, true, CATEGORYBIT_PLAYER, MASKBITS_FOOT, (short)0);
 		//final FixtureDef fd = PhysicsFactory.createFixtureDef(0f,0f,0f);
+		HEAD_FIXTURE_DEF.shape = shape1;
 		FOOT_FIXTURE_DEF.shape = shape;
 		final Fixture feet = this.PlayerBody.createFixture(FOOT_FIXTURE_DEF);
+		final Fixture head = this.PlayerBody.createFixture(HEAD_FIXTURE_DEF);
 		shape.dispose();
+		shape1.dispose();
 		//feet.setBullet(true);
 		this.PlayerBody.getFixtureList().get(1).setUserData("feet");
 		this.PlayerBody.getFixtureList().get(0).setUserData("body");
+		this.PlayerBody.getFixtureList().get(2).setUserData("head");
 		//feet.setUserData("feet");
 		this.PlayerBody.setUserData("player");
 		this.PlayerBody.setFixedRotation(true);
@@ -241,12 +258,27 @@ public class Mario{
 	//---------------------------------------------------------------------------------------------------------------
 	//Actions & States
 	public void hitGround(){
-		ONGROUND=true;
+		if(ONGROUND){
+			return;
+		}else{
+			ONGROUND=true;
+		}
 		if(ONGROUND && !RUNNING && (LEFT || RIGHT)){
 			walk();
 		}
 		else if(ONGROUND && RUNNING && (LEFT || RIGHT)){
 			run();
+		}
+		else if(ONGROUND && !(LEFT || RIGHT)){
+			stand();
+		}
+	}
+	public static void stand(){
+		if(DIRECTION){
+			Player.setCurrentTileIndex(0);
+		}
+		else if(!DIRECTION){
+			Player.setCurrentTileIndex(6);
 		}
 	}
 	public static void run(){
@@ -282,6 +314,10 @@ public class Mario{
 				Player.setCurrentTileIndex(11);
 		}
 	}
+
+
+
+
 	public void Left(boolean state){
 		if(!state){
 			LEFT = false;
@@ -316,7 +352,7 @@ public class Mario{
 	//CONSTRUCTOR
 	public Mario(Game parent,Engine engine){
 		BitmapTextureAtlasTextureRegionFactory.setAssetBasePath("gfx/");
-		this.PlayerAtlas = new BitmapTextureAtlas(parent.getTextureManager(),256,256,TextureOptions.DEFAULT);
+		this.PlayerAtlas = new BitmapTextureAtlas(parent.getTextureManager(),512,512,TextureOptions.DEFAULT);
 		this.PlayerTexture = BitmapTextureAtlasTextureRegionFactory.createTiledFromAsset(
 				this.PlayerAtlas,parent,"mario.png",0,0,6,2);
 		this.PlayerAtlas.load();

@@ -136,12 +136,10 @@ public class Game extends SimpleBaseGameActivity implements IAccelerationListene
 	@Override
 	public Scene onCreateScene() {
 		this.initScene();
-		new LevelLoader(this,this.mEngine,"template.tmx");
+		//new LevelLoader(this,this.mEngine,"test2");
 		//new LevelLoader(this,this.mEngine,"test");
-		//new LevelLoader(this,this.mEngine,"blocks.tmx");
-		//this.loadLevel();
-		this.mario.createPlayer(CAMERA_WIDTH / 2,CAMERA_HEIGHT / 2,this);
-		//this.mario.createPlayer(32*15,32*10,this);
+		new LevelLoader(this,this.mEngine,"template.tmx");
+		this.mario.createPlayer(2,10,this);
 		this.camera.setChaseEntity(this.mario.Player);
 		this.scene.getChildByIndex(1).attachChild(this.mario.Player);
 		this.setupHUD();
@@ -216,6 +214,31 @@ public class Game extends SimpleBaseGameActivity implements IAccelerationListene
 			public void beginContact(Contact contact){
 				final Fixture x1 = contact.getFixtureA();
 				final Fixture x2 = contact.getFixtureB();
+				if (x2.getUserData().equals(null) || x1.getBody().getUserData().equals(null)){
+					return;
+				}
+				if (x2.getUserData().equals("head") && x1.getUserData().equals("bottom")){
+					//mario.hitGround();
+					//Game.this.popup("head hit bottom of a block!");
+					//
+					//World.unregisterPhysicsConnector(physicsConnector);
+					final Body b = x1.getBody();
+					Game.this.runOnUpdateThread(new Runnable(){
+						@Override
+						public void run(){
+							b.setActive(false);
+							World.destroyBody(b);
+						}
+					});
+					Game.this.scene.detachChild((AnimatedSprite) b.getUserData());
+				}
+				else{
+					//
+				}
+				//-------------------------------------------------------------------------------------
+				if (x2.getUserData().equals("feet") && x1.getBody().getUserData().equals("block")){
+					mario.hitGround();
+				}
 				if (x2.getUserData().equals("feet") && x1.getBody().getUserData().equals("ground")){
 					mario.hitGround();
 				}
@@ -226,6 +249,12 @@ public class Game extends SimpleBaseGameActivity implements IAccelerationListene
 					mario.hitGround();
 				}
 				if (x2.getUserData().equals("feet") && x1.getBody().getUserData().equals("note")){
+					mario.hitGround();
+				}
+				if (x2.getUserData().equals("head") && x1.getBody().getUserData().equals("wall")){
+					mario.hitGround();
+				}
+				if (x2.getUserData().equals("head") && x1.getBody().getUserData().equals("ground")){
 					mario.hitGround();
 				}
 			}
@@ -247,6 +276,9 @@ public class Game extends SimpleBaseGameActivity implements IAccelerationListene
 				float distance = py-by;
 				float dx = px - bx;
 				if(distance>=0.01){
+					contact.setEnabled(false);
+				}
+				if (x2.getUserData().equals("head") && (x1.getUserData() != "bottom")){
 					contact.setEnabled(false);
 				}
 			}
@@ -378,9 +410,7 @@ public class Game extends SimpleBaseGameActivity implements IAccelerationListene
 					}
 				}
 				if(touch.isActionDown()){
-					String hi = (String) mario.PlayerBody.getFixtureList().get(0).getUserData();
-					String ri = (String) mario.PlayerBody.getFixtureList().get(1).getUserData();
-					Game.this.popup("1: "+hi+" 2: "+ri);
+					Game.this.popup("");
 				}
 				return true;
 			}
