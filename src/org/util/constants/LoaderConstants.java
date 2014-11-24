@@ -1,4 +1,4 @@
-package org.util;
+package org.util.constants;
 /**
  * Constants needed for the parsing of the PhysicsEditor's XML
  * @author johannesborchardt

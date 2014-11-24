@@ -1,5 +1,6 @@
 package org.util;
 
+import org.util.constants.LoaderConstants;
 import org.util.constants.Collisions;
 import org.games.Game;
 import org.games.objects.*;
@@ -237,6 +238,7 @@ public class LevelLoader{
 										}
 										else if(props.containsTMXProperty("block", "stone")) { 
 											//this is gonna be the floor
+											//new Stone(x,y,parent);
 										}
 										else{ }
 									}
@@ -328,6 +330,7 @@ public class LevelLoader{
 					if(offset==0)
 						offset++;
 					this.addGround(i*32,j*32,offset*32,32,parent);
+					//this.addGround(i*32,j*32,offset*32,2,parent);
 					if(!((i+offset) == (this.map.getTileColumns() - 1)))
 						i = i+offset;
 				}
@@ -337,11 +340,12 @@ public class LevelLoader{
 	//Make a physics rectangle/box with userdata "ground"
 	public void addGround(int x,int y,int w,int h,final Game parent){
 		final Rectangle box = new Rectangle( x,y,w,h,this.vbo);
-		//box.setColor(1.0f,0.0f,1.0f,1.0f);
-		//box.setVisible(true);
-		box.setVisible(false);
+		box.setColor(0.4f,0.0f,1.0f,0.4f);
+		box.setVisible(true);
+		//box.setVisible(false);
 		final Body floor = 
-			PhysicsFactory.createBoxBody(parent.World, box, BodyType.StaticBody, Collisions.GROUND_FIXTURE_DEF);
+			PhysicsFactory.createBoxBody(parent.World, box, BodyType.StaticBody, Collisions.WALL_FIXTURE_DEF);
+			//PhysicsFactory.createBoxBody(parent.World, box, BodyType.StaticBody, Collisions.GROUND_FIXTURE_DEF);
 		floor.setUserData("ground");
 		parent.scene.getChildByIndex(1).attachChild(box);
 	}

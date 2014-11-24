@@ -97,6 +97,7 @@ public class Game extends SimpleBaseGameActivity implements IAccelerationListene
 	private static float GRAVITY = 25.0f;
 	//PlayerFlags
 	private static boolean BUTTON4=false;
+	private static int hithead=0;
 	//-----------------------------------------------------------------------------------------------------------
 	//Wall Collides with Player
 	//...PLAYER_DEF defined in xml/mario.xml, but not sure exactly what its definition is!
@@ -136,9 +137,9 @@ public class Game extends SimpleBaseGameActivity implements IAccelerationListene
 	@Override
 	public Scene onCreateScene() {
 		this.initScene();
-		new LevelLoader(this,this.mEngine,"test2");
+		//new LevelLoader(this,this.mEngine,"test2");
 		//new LevelLoader(this,this.mEngine,"test");
-		//new LevelLoader(this,this.mEngine,"template.tmx");
+		new LevelLoader(this,this.mEngine,"template.tmx");
 		this.mario.createPlayer(32,32,this);
 		this.camera.setChaseEntity(this.mario.Player);
 		this.scene.getChildByIndex(1).attachChild(this.mario.Player);
@@ -218,16 +219,21 @@ public class Game extends SimpleBaseGameActivity implements IAccelerationListene
 					if(x2.getUserData().toString() == "feet"){
 						mario.hitGround();
 					}
+					if (x2.getUserData().toString() == "head" && x1.getUserData() != null &&  x1.getUserData().toString() == "bottom"){
+						hithead++;
+						Game.this.popup("hit head! count: "+hithead);
+
+					}
 				}
 				if (x1.getUserData() != null){
 					if(x1.getUserData().toString() == "feet"){
 						mario.hitGround();
 					}
+					if (x1.getUserData().toString() == "feet" && x2.getUserData() != null &&  x2.getUserData().toString() == "bottom"){
+						Game.this.popup("hit feet");
+					}
 				}
-				if (x2.getUserData().equals("head") && x1.getUserData().equals("bottom")){
-					//mario.hitGround();
-					//Game.this.popup("head hit bottom of a block!");
-					//World.unregisterPhysicsConnector(physicsConnector);
+					/*
 					final Body b = x1.getBody();
 					Game.this.runOnUpdateThread(new Runnable(){
 						@Override
@@ -238,28 +244,7 @@ public class Game extends SimpleBaseGameActivity implements IAccelerationListene
 					});
 					x2.getBody().setLinearVelocity(new Vector2(0,0));
 					//Game.this.scene.detachChild((AnimatedSprite) b.getUserData());
-				}
-				/*
-				//-------------------------------------------------------------------------------------
-				if (x2.getUserData().equals("feet") && x1.getUserData().equals("ground")){
-					mario.hitGround();
-				}
-				if (x2.getUserData().equals("feet") && x1.getBody().getUserData().equals("block")){
-					mario.hitGround();
-				}
-				if (x2.getUserData().equals("feet") && x1.getBody().getUserData().equals("ground")){
-					mario.hitGround();
-				}
-				if (x2.getUserData().equals("feet") && x1.getBody().getUserData().equals("wall")){
-					mario.hitGround();
-				}
-				if (x2.getUserData().equals("feet") && x1.getBody().getUserData().equals("platform")){
-					mario.hitGround();
-				}
-				if (x2.getUserData().equals("feet") && x1.getBody().getUserData().equals("note")){
-					mario.hitGround();
-				}
-				*/
+					*/
 			}
 			public void endContact(Contact contact){
 				final Fixture x1 = contact.getFixtureA();
