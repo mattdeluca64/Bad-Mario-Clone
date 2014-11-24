@@ -1,5 +1,6 @@
 package org.games.objects;
 import org.games.Game;
+import org.util.constants.Collisions;
 
 
 import org.andengine.opengl.texture.TextureOptions;
@@ -31,13 +32,6 @@ import org.andengine.entity.primitive.Rectangle;
 public class BlankBlock{
 	private static BitmapTextureAtlas PlayerAtlas;
 	private static TiledTextureRegion BoxTexture;
-	public static final short CATEGORYBIT_WALL = 1;
-	public static final short CATEGORYBIT_PLAYER = 2;
-	public static final short MASKBITS_WALL = CATEGORYBIT_PLAYER; 
-	public static final FixtureDef WALL_FIXTURE_DEF = PhysicsFactory.createFixtureDef(
-			1, 0.0f, 0.45f, false, CATEGORYBIT_WALL, MASKBITS_WALL, (short)0);
-	public static final FixtureDef BOX_FIXTURE_DEF = PhysicsFactory.createFixtureDef(
-			0.2f, 0.0f, 0.40f, false, CATEGORYBIT_WALL, MASKBITS_WALL, (short)0);
 	
 	public static AnimatedSprite box;
 	public BlankBlock(int x,int y,final Game parent){
@@ -52,7 +46,7 @@ public class BlankBlock{
 		//box.setVisible(false);
 		this.box = new AnimatedSprite(x,y,this.BoxTexture,parent.getVertexBufferObjectManager());
 		this.box.setCurrentTileIndex(36);
-		Body floor = PhysicsFactory.createBoxBody(parent.World, box, BodyType.StaticBody, WALL_FIXTURE_DEF);
+		Body floor = PhysicsFactory.createBoxBody(parent.World, box, BodyType.StaticBody, Collisions.WALL_FIXTURE_DEF);
 		floor.setUserData("note");
 		parent.scene.getChildByIndex(1).attachChild(box);
 	}

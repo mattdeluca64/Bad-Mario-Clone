@@ -1,4 +1,5 @@
 package org.games.entity;
+import org.util.constants.Collisions;
 import org.games.Game;
 import org.util.PhysicsEditorLoader;
 import org.andengine.extension.debugdraw.DebugRenderer;
@@ -83,6 +84,7 @@ import android.graphics.Typeface;
 public class Mario{
 	//-------------------------------
 	//States
+	private static int feetcontacts = 0;
 	private static boolean ONGROUND;
 	private static boolean JUMPING;
 	private static boolean RUNNING;
@@ -118,7 +120,6 @@ public class Mario{
 	public static Sound JumpSound;
 	//-------------------------------
 	private static PhysicsEditorLoader loader;
-	//private static final FixtureDef PLAYER_FIXTURE_DEF = PhysicsFactor.createFixtureDef(1.0f,0.0f,0.45f,false,CATEGORYBIT_PLAYER,MASKBITS_PLAYER,(short)0);
 	//---------------------------------------------------------------------------------------------------------------
 	//Player billy = new Player(Game parent,Engine engine)
 	//billy.createPlayer(x,y,currentActivity);
@@ -154,25 +155,17 @@ public class Mario{
 			new Vector2(0.25f,-0.4f),
 			new Vector2(0.25f,-0.3f)};
 		shape1.set(verts1);
-		final short CATEGORYBIT_WALL = 1;
-		final short CATEGORYBIT_PLAYER = 2;
-		final short CATEGORYBIT_TOP = 4;
-		final short CATEGORYBIT_BOTTOM = 8;
-		final short MASKBITS_HEAD = CATEGORYBIT_BOTTOM;
-		final short MASKBITS_FOOT = CATEGORYBIT_TOP + CATEGORYBIT_WALL;
-		final short MASKBITS_WALL = CATEGORYBIT_BOTTOM + CATEGORYBIT_PLAYER; 
-		final short MASKBITS_PLAYER = CATEGORYBIT_BOTTOM + CATEGORYBIT_TOP+CATEGORYBIT_PLAYER + CATEGORYBIT_WALL; 
-		final FixtureDef HEAD_FIXTURE_DEF = PhysicsFactory.createFixtureDef(
-			0, 0.0f, 0.00f, true, CATEGORYBIT_PLAYER, MASKBITS_HEAD, (short)0);
-		final FixtureDef FOOT_FIXTURE_DEF = PhysicsFactory.createFixtureDef(
-			0, 0.0f, 0.00f, true, CATEGORYBIT_PLAYER, MASKBITS_FOOT, (short)0);
 		//final FixtureDef fd = PhysicsFactory.createFixtureDef(0f,0f,0f);
-		HEAD_FIXTURE_DEF.shape = shape1;
-		FOOT_FIXTURE_DEF.shape = shape;
-		final Fixture feet = this.PlayerBody.createFixture(FOOT_FIXTURE_DEF);
-		final Fixture head = this.PlayerBody.createFixture(HEAD_FIXTURE_DEF);
+		Collisions.PLAYER_FIXTURE_DEF.shape = shape;
+		final Fixture feet = this.PlayerBody.createFixture(Collisions.PLAYER_FIXTURE_DEF);
 		shape.dispose();
+		Collisions.PLAYER_FIXTURE_DEF.shape = shape1;
+		final Fixture head = this.PlayerBody.createFixture(Collisions.PLAYER_FIXTURE_DEF);
 		shape1.dispose();
+		//Collisions.FOOT_FIXTURE_DEF.shape = shape;
+		//final Fixture feet = this.PlayerBody.createFixture(Collisions.FOOT_FIXTURE_DEF);
+		//Collisions.HEAD_FIXTURE_DEF.shape = shape1;
+		//final Fixture head = this.PlayerBody.createFixture(Collisions.HEAD_FIXTURE_DEF);
 		//feet.setBullet(true);
 		this.PlayerBody.getFixtureList().get(1).setUserData("feet");
 		this.PlayerBody.getFixtureList().get(0).setUserData("body");
@@ -257,7 +250,17 @@ public class Mario{
 	}
 	//---------------------------------------------------------------------------------------------------------------
 	//Actions & States
+	public void leftGround(){
+		if (feetcontacts > 0)
+			feetcontacts--;
+		if (feetcontacts <= 0){
+			feetcontacts = 0;
+			ONGROUND=false;
+		}
+
+	}
 	public void hitGround(){
+		feetcontacts++;
 		if(ONGROUND){
 			return;
 		}else{
@@ -301,7 +304,8 @@ public class Mario{
 	public void Jump(boolean state){
 		if(!state)
 			JUMPING=false;
-		if(!JUMPING && state && ONGROUND){
+		if(!JUMPING && state && ONGROUND && feetcontacts>=1){
+			feetcontacts=0;
 			ONGROUND=false;
 			JUMPTIMER = 0;
 			currentJUMPFORCE = JUMPFORCE;

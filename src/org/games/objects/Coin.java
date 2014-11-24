@@ -1,5 +1,6 @@
 package org.games.objects;
 import org.games.Game;
+import org.util.constants.Collisions;
 import org.andengine.engine.Engine;
 import org.andengine.audio.sound.Sound;
 import org.andengine.audio.sound.SoundFactory;
@@ -33,13 +34,6 @@ public class Coin{
 	private static Sound CoinSound;
 	private static BitmapTextureAtlas PlayerAtlas;
 	private static TiledTextureRegion BoxTexture;
-	public static final short CATEGORYBIT_WALL = 1;
-	public static final short CATEGORYBIT_PLAYER = 2;
-	public static final short MASKBITS_WALL = CATEGORYBIT_PLAYER; 
-	public static final FixtureDef WALL_FIXTURE_DEF = PhysicsFactory.createFixtureDef(
-			1, 0.0f, 0.45f, false, CATEGORYBIT_WALL, MASKBITS_WALL, (short)0);
-	public static final FixtureDef BOX_FIXTURE_DEF = PhysicsFactory.createFixtureDef(
-			0.2f, 0.0f, 0.40f, false, CATEGORYBIT_WALL, MASKBITS_WALL, (short)0);
 	
 	public static AnimatedSprite box;
 	public Coin(int x,int y,final Game parent,Engine engine){

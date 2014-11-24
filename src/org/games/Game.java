@@ -136,10 +136,10 @@ public class Game extends SimpleBaseGameActivity implements IAccelerationListene
 	@Override
 	public Scene onCreateScene() {
 		this.initScene();
-		//new LevelLoader(this,this.mEngine,"test2");
+		new LevelLoader(this,this.mEngine,"test2");
 		//new LevelLoader(this,this.mEngine,"test");
-		new LevelLoader(this,this.mEngine,"template.tmx");
-		this.mario.createPlayer(2,10,this);
+		//new LevelLoader(this,this.mEngine,"template.tmx");
+		this.mario.createPlayer(32,32,this);
 		this.camera.setChaseEntity(this.mario.Player);
 		this.scene.getChildByIndex(1).attachChild(this.mario.Player);
 		this.setupHUD();
@@ -214,9 +214,17 @@ public class Game extends SimpleBaseGameActivity implements IAccelerationListene
 			public void beginContact(Contact contact){
 				final Fixture x1 = contact.getFixtureA();
 				final Fixture x2 = contact.getFixtureB();
-				if (x2.getUserData().equals(null) || x1.getBody().getUserData().equals(null)){
-					return;
+				if (x2.getUserData() != null){
+					if(x2.getUserData().toString() == "feet"){
+						mario.hitGround();
+					}
 				}
+				if (x1.getUserData() != null){
+					if(x1.getUserData().toString() == "feet"){
+						mario.hitGround();
+					}
+				}
+				/*
 				if (x2.getUserData().equals("head") && x1.getUserData().equals("bottom")){
 					//mario.hitGround();
 					//Game.this.popup("head hit bottom of a block!");
@@ -232,10 +240,10 @@ public class Game extends SimpleBaseGameActivity implements IAccelerationListene
 					});
 					Game.this.scene.detachChild((AnimatedSprite) b.getUserData());
 				}
-				else{
-					//
-				}
 				//-------------------------------------------------------------------------------------
+				if (x2.getUserData().equals("feet") && x1.getUserData().equals("ground")){
+					mario.hitGround();
+				}
 				if (x2.getUserData().equals("feet") && x1.getBody().getUserData().equals("block")){
 					mario.hitGround();
 				}
@@ -251,14 +259,21 @@ public class Game extends SimpleBaseGameActivity implements IAccelerationListene
 				if (x2.getUserData().equals("feet") && x1.getBody().getUserData().equals("note")){
 					mario.hitGround();
 				}
-				if (x2.getUserData().equals("head") && x1.getBody().getUserData().equals("wall")){
-					mario.hitGround();
-				}
-				if (x2.getUserData().equals("head") && x1.getBody().getUserData().equals("ground")){
-					mario.hitGround();
-				}
+				*/
 			}
 			public void endContact(Contact contact){
+				final Fixture x1 = contact.getFixtureA();
+				final Fixture x2 = contact.getFixtureB();
+				if (x2.getUserData() != null){
+					if(x2.getUserData().toString() == "feet"){
+						mario.leftGround();
+					}
+				}
+				if (x1.getUserData() != null){
+					if(x1.getUserData().toString() == "feet"){
+						mario.leftGround();
+					}
+				}
 			}
 			public void preSolve(Contact contact,Manifold impulse){
 				final Fixture x1 = contact.getFixtureA();

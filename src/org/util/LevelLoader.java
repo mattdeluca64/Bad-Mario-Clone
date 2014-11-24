@@ -1,5 +1,6 @@
 package org.util;
 
+import org.util.constants.Collisions;
 import org.games.Game;
 import org.games.objects.*;
 import org.andengine.extension.debugdraw.DebugRenderer;
@@ -147,32 +148,8 @@ public class LevelLoader{
 
 	private static TMXTile[][] TILES;
 	private static ArrayList<TMXLayer> LAYERS;
-	public static final short CATEGORYBIT_WALL = 1;
-	public static final short CATEGORYBIT_PLAYER = 2;
-	public static final short CATEGORYBIT_TOP = 4;
-	public static final short CATEGORYBIT_BOTTOM = 8;
-	public static final short MASKBITS_WALL = CATEGORYBIT_TOP + CATEGORYBIT_BOTTOM + CATEGORYBIT_PLAYER; 
 	//(...,float Mass,float Elasticity,float friction...)
 	//----------------------------------------------------------------------------------
-	public static final FixtureDef WALL_FIXTURE_DEF = PhysicsFactory.createFixtureDef(
-			1, 0.0f, 0.45f, false, CATEGORYBIT_WALL, MASKBITS_WALL, (short)0);
-	public static final FixtureDef BOX_FIXTURE_DEF = PhysicsFactory.createFixtureDef(
-			0.2f, 0.0f, 0.40f, false, CATEGORYBIT_WALL, MASKBITS_WALL, (short)0);
-	//----------------------------------------------------------------------------------
-	public static final FixtureDef BOTTOM_FIXTURE_DEF = PhysicsFactory.createFixtureDef(
-			0.0f, 0.4f, 0.00f, false, CATEGORYBIT_WALL, MASKBITS_WALL, (short)0);
-
-	public static final FixtureDef LEFT_FIXTURE_DEF = PhysicsFactory.createFixtureDef(
-			0.0f, 0.0f, 0.00f, false, CATEGORYBIT_WALL, MASKBITS_WALL, (short)0);
-
-	public static final FixtureDef RIGHT_FIXTURE_DEF = PhysicsFactory.createFixtureDef(
-			0.0f, 0.0f, 0.00f, false, CATEGORYBIT_WALL, MASKBITS_WALL, (short)0);
-
-	public static final FixtureDef TOP_FIXTURE_DEF = PhysicsFactory.createFixtureDef(
-			0.0f, 0.0f, 0.45f, false, CATEGORYBIT_WALL, MASKBITS_WALL, (short)0);
-
-	public static final FixtureDef BOXSENSOR_FIXTURE_DEF = PhysicsFactory.createFixtureDef(
-			0.0f, 0.0f, 0.45f, true, CATEGORYBIT_WALL, MASKBITS_WALL, (short)0);
 	//----------------------------------------------------------------------------------
 	public LevelLoader(final Game parent,final Engine engine,String file){
 		this.vbo = parent.getVertexBufferObjectManager();
@@ -186,64 +163,6 @@ public class LevelLoader{
 			this.COLS = this.width / 32;
 			this.ROWS = this.height / 32;
 			new Brick(this.width / 2,this.height / 2,parent);
-			/*
-			//----------------------------------------------------------------------------------
-			final Rectangle box = new Rectangle( this.width / 2,this.height / 2 - 32,32,32,this.vbo);
-			box.setVisible(false);
-			//----------------------------------------------------------------------------------
-			final Body body = 
-				PhysicsFactory.createBoxBody(parent.World, box, BodyType.StaticBody, BOXSENSOR_FIXTURE_DEF);
-			//----------------------------------------------------------------------------------
-			//bottom
-			final PolygonShape shape1 = new PolygonShape();
-			final Vector2[] verts1 = new Vector2[]{
-				new Vector2(-0.45f,0.5f),
-				new Vector2(-0.45f,0.4f),
-				new Vector2(0.45f,0.4f),
-				new Vector2(0.45f,0.5f)};
-			shape1.set(verts1);
-			BOTTOM_FIXTURE_DEF.shape = shape1;
-			final Fixture bottom = body.createFixture(BOTTOM_FIXTURE_DEF);
-			//----------------------------------------------------------------------------------
-			//top
-			final PolygonShape shape = new PolygonShape();
-			final Vector2[] verts = new Vector2[]{
-				new Vector2(-0.45f,-0.4f),
-				new Vector2(-0.45f,-0.5f),
-				new Vector2(0.45f,-0.5f),
-				new Vector2(0.45f,-0.4f)};
-			shape.set(verts);
-			TOP_FIXTURE_DEF.shape = shape;
-			final Fixture top = body.createFixture(TOP_FIXTURE_DEF);
-			//----------------------------------------------------------------------------------
-			//left
-			final PolygonShape shape3 = new PolygonShape();
-			final Vector2[] verts3 = new Vector2[]{
-				new Vector2(-0.5f,0.5f),
-				new Vector2(-0.5f,-0.5f),
-				new Vector2(-0.45f,-0.5f),
-				new Vector2(-0.45f,0.5f)};
-			shape3.set(verts3);
-			LEFT_FIXTURE_DEF.shape = shape3;
-			final Fixture left = body.createFixture(LEFT_FIXTURE_DEF);
-			shape.dispose();
-			//----------------------------------------------------------------------------------
-			//right
-			final PolygonShape shape4 = new PolygonShape();
-			final Vector2[] verts4 = new Vector2[]{
-				new Vector2(0.45f,0.5f),
-				new Vector2(0.45f,-0.5f),
-				new Vector2(0.5f,-0.5f),
-				new Vector2(0.5f,0.5f)};
-			shape4.set(verts4);
-			RIGHT_FIXTURE_DEF.shape = shape4;
-			final Fixture right = body.createFixture(RIGHT_FIXTURE_DEF);
-			//----------------------------------------------------------------------------------
-			body.setUserData("block");
-			parent.scene.getChildByIndex(1).attachChild(box);
-			shape1.dispose();
-			//----------------------------------------------------------------------------------
-			*/
 		}
 		else if(file=="test"){
 			this.width = parent.CAMERA_WIDTH;
@@ -422,7 +341,7 @@ public class LevelLoader{
 		//box.setVisible(true);
 		box.setVisible(false);
 		final Body floor = 
-			PhysicsFactory.createBoxBody(parent.World, box, BodyType.StaticBody, WALL_FIXTURE_DEF);
+			PhysicsFactory.createBoxBody(parent.World, box, BodyType.StaticBody, Collisions.GROUND_FIXTURE_DEF);
 		floor.setUserData("ground");
 		parent.scene.getChildByIndex(1).attachChild(box);
 	}
@@ -431,7 +350,7 @@ public class LevelLoader{
 		final Rectangle box = new Rectangle( x,y,w,h,this.vbo);
 		box.setVisible(false);
 		final Body floor = 
-			PhysicsFactory.createBoxBody(parent.World, box, BodyType.StaticBody, WALL_FIXTURE_DEF);
+			PhysicsFactory.createBoxBody(parent.World, box, BodyType.StaticBody, Collisions.WALL_FIXTURE_DEF);
 		floor.setUserData(type);
 		parent.scene.getChildByIndex(1).attachChild(box);
 	}
@@ -453,7 +372,7 @@ public class LevelLoader{
 			box.animate(100);
 		}
 		final Body floor = 
-			PhysicsFactory.createBoxBody(parent.World, box, BodyType.StaticBody, WALL_FIXTURE_DEF);
+			PhysicsFactory.createBoxBody(parent.World, box, BodyType.StaticBody, Collisions.WALL_FIXTURE_DEF);
 		floor.setUserData("wall");
 		parent.scene.getChildByIndex(1).attachChild(box);
 	}
@@ -461,7 +380,7 @@ public class LevelLoader{
 		final Rectangle box = new Rectangle( x,y,w,h,this.vbo);
 		box.setVisible(false);
 		final Body floor = 
-			PhysicsFactory.createBoxBody(parent.World, box, BodyType.StaticBody, WALL_FIXTURE_DEF);
+			PhysicsFactory.createBoxBody(parent.World, box, BodyType.StaticBody, Collisions.WALL_FIXTURE_DEF);
 		floor.setUserData("wall");
 		parent.scene.getChildByIndex(1).attachChild(box);
 	}
@@ -478,9 +397,9 @@ public class LevelLoader{
 		box.setVisible(false);
 		final Body floor;
 		if(type=="block"){
-			floor = PhysicsFactory.createBoxBody(parent.World, box, BodyType.StaticBody, BOX_FIXTURE_DEF);
+			floor = PhysicsFactory.createBoxBody(parent.World, box, BodyType.StaticBody, Collisions.BOX_FIXTURE_DEF);
 		} else{
-			floor = PhysicsFactory.createBoxBody(parent.World, box, BodyType.StaticBody, WALL_FIXTURE_DEF);
+			floor = PhysicsFactory.createBoxBody(parent.World, box, BodyType.StaticBody, Collisions.WALL_FIXTURE_DEF);
 		} 
 
 		floor.setUserData("wall");

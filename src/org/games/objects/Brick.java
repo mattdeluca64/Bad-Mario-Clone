@@ -1,4 +1,5 @@
 package org.games.objects;
+import org.util.constants.Collisions;
 import org.games.Game;
 
 
@@ -31,29 +32,6 @@ import org.andengine.entity.primitive.Rectangle;
 public class Brick{
 	private static BitmapTextureAtlas PlayerAtlas;
 	private static TiledTextureRegion BoxTexture;
-	public static final short CATEGORYBIT_WALL = 1;
-	public static final short CATEGORYBIT_PLAYER = 2;
-	public static final short CATEGORYBIT_TOP = 4;
-	public static final short CATEGORYBIT_BOTTOM = 8;
-	public static final short MASKBITS_WALL = CATEGORYBIT_PLAYER + CATEGORYBIT_BOTTOM + CATEGORYBIT_TOP; 
-	//public static final short MASKBITS_TOP = CATEGORYBIT_PLAYER + CATEGORYBIT_WALL +CATEGORYBIT_BOTTOM; 
-	public static final short MASKBITS_TOP = CATEGORYBIT_PLAYER + CATEGORYBIT_BOTTOM; 
-	public static final short MASKBITS_BOTTOM = CATEGORYBIT_WALL + CATEGORYBIT_PLAYER + CATEGORYBIT_TOP; 
-	public static final FixtureDef WALL_FIXTURE_DEF = PhysicsFactory.createFixtureDef(
-			1, 0.0f, 0.45f, false, CATEGORYBIT_WALL, MASKBITS_WALL, (short)0);
-	public static final FixtureDef BOX_FIXTURE_DEF = PhysicsFactory.createFixtureDef(
-			0.2f, 0.0f, 0.40f, false, CATEGORYBIT_WALL, MASKBITS_WALL, (short)0);
-	//----------------------------------------------------------------------------------
-	public static final FixtureDef BOTTOM_FIXTURE_DEF = PhysicsFactory.createFixtureDef(
-			0.0f, 0.4f, 0.00f, false, CATEGORYBIT_WALL, MASKBITS_BOTTOM, (short)0);
-	public static final FixtureDef LEFT_FIXTURE_DEF = PhysicsFactory.createFixtureDef(
-			0.0f, 0.0f, 0.00f, false, CATEGORYBIT_WALL, MASKBITS_WALL, (short)0);
-	public static final FixtureDef RIGHT_FIXTURE_DEF = PhysicsFactory.createFixtureDef(
-			0.0f, 0.0f, 0.00f, false, CATEGORYBIT_WALL, MASKBITS_WALL, (short)0);
-	public static final FixtureDef TOP_FIXTURE_DEF = PhysicsFactory.createFixtureDef(
-			0.0f, 0.0f, 0.45f, false, CATEGORYBIT_WALL, MASKBITS_TOP, (short)0);
-	public static final FixtureDef BOXSENSOR_FIXTURE_DEF = PhysicsFactory.createFixtureDef(
-			0.0f, 0.0f, 0.45f, true, CATEGORYBIT_WALL, MASKBITS_WALL, (short)0);
 	
 	//public static Rectangle box;
 	public static AnimatedSprite box;
@@ -71,7 +49,8 @@ public class Brick{
 		this.box = new AnimatedSprite(x,y,this.BoxTexture,parent.getVertexBufferObjectManager());
 		this.box.animate(new long[]{200,200,200,200},64,67,true);
 		//this.box.setCurrentTileIndex(12);
-		Body body = PhysicsFactory.createBoxBody(parent.World, box, BodyType.StaticBody, BOXSENSOR_FIXTURE_DEF);
+		Body body = PhysicsFactory.createBoxBody(parent.World, box, BodyType.StaticBody, Collisions.WALL_FIXTURE_DEF);
+		//Body body = PhysicsFactory.createBoxBody(parent.World, box, BodyType.StaticBody, Collisions.BOXSENSOR_FIXTURE_DEF);
 		//----------------------------------------------------------------------------------
 			//----------------------------------------------------------------------------------
 			//bottom
@@ -82,8 +61,10 @@ public class Brick{
 				new Vector2(0.45f,0.4f),
 				new Vector2(0.45f,0.5f)};
 			shape1.set(verts1);
-			BOTTOM_FIXTURE_DEF.shape = shape1;
-			Fixture bottom = body.createFixture(BOTTOM_FIXTURE_DEF);
+			Collisions.WALL_FIXTURE_DEF.shape = shape1;
+			Fixture bottom = body.createFixture(Collisions.WALL_FIXTURE_DEF);
+			//Collisions.BOTTOM_FIXTURE_DEF.shape = shape1;
+			//Fixture bottom = body.createFixture(Collisions.BOTTOM_FIXTURE_DEF);
 			shape1.dispose();
 			//----------------------------------------------------------------------------------
 			//top
@@ -94,8 +75,12 @@ public class Brick{
 				new Vector2(0.45f,-0.5f),
 				new Vector2(0.45f,-0.4f)};
 			shape.set(verts);
-			TOP_FIXTURE_DEF.shape = shape;
-			final Fixture top = body.createFixture(TOP_FIXTURE_DEF);
+			Collisions.WALL_FIXTURE_DEF.shape = shape;
+			Fixture top = body.createFixture(Collisions.WALL_FIXTURE_DEF);
+			//Collisions.WALL_FIXTURE_DEF.shape = shape;
+			//Collisions.GROUND_FIXTURE_DEF.shape = shape;
+			//final Fixture top = body.createFixture(Collisions.WALL_FIXTURE_DEF);
+			//final Fixture top = body.createFixture(Collisions.GROUND_FIXTURE_DEF);
 			shape.dispose();
 			//----------------------------------------------------------------------------------
 			//left
@@ -106,8 +91,10 @@ public class Brick{
 				new Vector2(-0.45f,-0.5f),
 				new Vector2(-0.45f,0.5f)};
 			shape3.set(verts3);
-			LEFT_FIXTURE_DEF.shape = shape3;
-			final Fixture left = body.createFixture(LEFT_FIXTURE_DEF);
+			Collisions.WALL_FIXTURE_DEF.shape = shape3;
+			Fixture left = body.createFixture(Collisions.WALL_FIXTURE_DEF);
+			//Collisions.WALL_FIXTURE_DEF.shape = shape3;
+			//final Fixture left = body.createFixture(Collisions.WALL_FIXTURE_DEF);
 			shape3.dispose();
 			//----------------------------------------------------------------------------------
 			//right
@@ -118,16 +105,19 @@ public class Brick{
 				new Vector2(0.5f,-0.5f),
 				new Vector2(0.5f,0.5f)};
 			shape4.set(verts4);
-			RIGHT_FIXTURE_DEF.shape = shape4;
-			final Fixture right = body.createFixture(RIGHT_FIXTURE_DEF);
+			Collisions.WALL_FIXTURE_DEF.shape = shape4;
+			Fixture right = body.createFixture(Collisions.WALL_FIXTURE_DEF);
+			//Collisions.WALL_FIXTURE_DEF.shape = shape4;
+			//final Fixture right = body.createFixture(Collisions.WALL_FIXTURE_DEF);
 			shape4.dispose();
 			//----------------------------------------------------------------------------------
-			body.getFixtureList().get(0).setUserData("boxsensor");
+			body.getFixtureList().get(0).setUserData("boxbody");
 			body.getFixtureList().get(1).setUserData("bottom");
-			body.getFixtureList().get(2).setUserData("top");
-			body.getFixtureList().get(3).setUserData("left");
-			body.getFixtureList().get(4).setUserData("right");
-			body.setUserData(box);
+			body.getFixtureList().get(2).setUserData("ground");
+			body.getFixtureList().get(3).setUserData("wall");
+			body.getFixtureList().get(4).setUserData("wall");
+			body.setUserData("brick");
+			//body.setUserData(this.box);
 			parent.scene.getChildByIndex(1).attachChild(box);
 	}
 }
