@@ -224,11 +224,9 @@ public class Game extends SimpleBaseGameActivity implements IAccelerationListene
 						mario.hitGround();
 					}
 				}
-				/*
 				if (x2.getUserData().equals("head") && x1.getUserData().equals("bottom")){
 					//mario.hitGround();
 					//Game.this.popup("head hit bottom of a block!");
-					//
 					//World.unregisterPhysicsConnector(physicsConnector);
 					final Body b = x1.getBody();
 					Game.this.runOnUpdateThread(new Runnable(){
@@ -238,8 +236,10 @@ public class Game extends SimpleBaseGameActivity implements IAccelerationListene
 							World.destroyBody(b);
 						}
 					});
-					Game.this.scene.detachChild((AnimatedSprite) b.getUserData());
+					x2.getBody().setLinearVelocity(new Vector2(0,0));
+					//Game.this.scene.detachChild((AnimatedSprite) b.getUserData());
 				}
+				/*
 				//-------------------------------------------------------------------------------------
 				if (x2.getUserData().equals("feet") && x1.getUserData().equals("ground")){
 					mario.hitGround();

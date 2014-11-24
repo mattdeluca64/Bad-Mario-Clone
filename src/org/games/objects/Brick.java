@@ -61,10 +61,10 @@ public class Brick{
 				new Vector2(0.45f,0.4f),
 				new Vector2(0.45f,0.5f)};
 			shape1.set(verts1);
-			Collisions.WALL_FIXTURE_DEF.shape = shape1;
-			Fixture bottom = body.createFixture(Collisions.WALL_FIXTURE_DEF);
-			//Collisions.BOTTOM_FIXTURE_DEF.shape = shape1;
-			//Fixture bottom = body.createFixture(Collisions.BOTTOM_FIXTURE_DEF);
+			//Collisions.WALL_FIXTURE_DEF.shape = shape1;
+			//Fixture bottom = body.createFixture(Collisions.WALL_FIXTURE_DEF);
+			Collisions.BOTTOM_FIXTURE_DEF.shape = shape1;
+			Fixture bottom = body.createFixture(Collisions.BOTTOM_FIXTURE_DEF);
 			shape1.dispose();
 			//----------------------------------------------------------------------------------
 			//top
