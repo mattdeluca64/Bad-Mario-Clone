@@ -143,12 +143,13 @@ public class LevelLoader{
 	private static TMXTiledMap map;
 	private static int ROWS;
 	private static int COLS;
-	private static int width;
-	private static int height;
 	private final static int TOPLAYER = 2; //right now, object - background - foreground
 
 	private static TMXTile[][] TILES;
 	private static ArrayList<TMXLayer> LAYERS;
+
+	private static int width;
+	private static int height;
 	//(...,float Mass,float Elasticity,float friction...)
 	//----------------------------------------------------------------------------------
 	//----------------------------------------------------------------------------------
@@ -259,9 +260,11 @@ public class LevelLoader{
 			}
 			//---------------------------------------
 			final TMXLayer ll = this.map.getTMXLayers().get(0);
+			this.width = ll.getWidth();
+			this.height = ll.getHeight();
 			addBounds(ll,parent);
-			parent.camera.setBounds(0, 0, ll.getWidth(),ll.getHeight());
-			parent.camera.setBoundsEnabled(true);
+			//parent.camera.setBounds(0, 0,this.width,this.height);
+			//parent.camera.setBoundsEnabled(true);
 			//---------------------------------------
 			this.computeFloors("block","stone",parent);
 			//this.computeFloors("type","ground",parent);
@@ -340,9 +343,9 @@ public class LevelLoader{
 	//Make a physics rectangle/box with userdata "ground"
 	public void addGround(int x,int y,int w,int h,final Game parent){
 		final Rectangle box = new Rectangle( x,y,w,h,this.vbo);
-		box.setColor(0.4f,0.0f,1.0f,0.4f);
-		box.setVisible(true);
-		//box.setVisible(false);
+		//box.setColor(0.4f,0.0f,1.0f,0.4f);
+		//box.setVisible(true);
+		box.setVisible(false);
 		final Body floor = 
 			PhysicsFactory.createBoxBody(parent.World, box, BodyType.StaticBody, Collisions.WALL_FIXTURE_DEF);
 			//PhysicsFactory.createBoxBody(parent.World, box, BodyType.StaticBody, Collisions.GROUND_FIXTURE_DEF);
@@ -408,6 +411,12 @@ public class LevelLoader{
 
 		floor.setUserData("wall");
 		parent.scene.getChildByIndex(1).attachChild(box);
+	}
+	public int getWidth(){
+		return this.width;
+	}
+	public int getHeight(){
+		return this.height;
 	}
 	public void loadResources(final Game parent,final Engine engine){
 		//--------------------------------------------------------------//

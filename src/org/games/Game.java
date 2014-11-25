@@ -1,4 +1,6 @@
 package org.games;
+import org.util.ResourcesManager;
+import org.games.objects.*;
 import org.util.math.DFS;
 import org.util.LevelLoader;
 import org.games.entity.Mario;
@@ -91,6 +93,9 @@ import android.widget.Button;
 import android.view.KeyEvent;
 import android.widget.Toast;
 public class Game extends SimpleBaseGameActivity implements IAccelerationListener, IOnSceneTouchListener {
+	public static ArrayList<Fixture> toDelete = new ArrayList<Fixture>();
+	public static Fixture toKill = null;
+	private static boolean killing = false;
 	public static final int CAMERA_WIDTH = 480;
 	public static final int CAMERA_HEIGHT = 320;
 	//settings - values
@@ -102,6 +107,7 @@ public class Game extends SimpleBaseGameActivity implements IAccelerationListene
 	//Wall Collides with Player
 	//...PLAYER_DEF defined in xml/mario.xml, but not sure exactly what its definition is!
 	//-----------------------------------------------------------------------------------------------------------
+	public static ResourcesManager rm;
 	public static Scene scene;
 	public static BoundCamera camera;
 	//public Camera camera;
@@ -125,6 +131,7 @@ public class Game extends SimpleBaseGameActivity implements IAccelerationListene
 		this.font.load();
 		this.score = new Text(0, 0, this.font, "Score:0123456789",this.getVertexBufferObjectManager());
 		//-------------------------------------------------------------------------------------------------------
+		//rm.loadBrickGraphics(this);
 		this.mario = new Mario(this,this.mEngine);
 		//-------------------------------------------------------------------------------------------------------
 	}
@@ -139,10 +146,17 @@ public class Game extends SimpleBaseGameActivity implements IAccelerationListene
 		this.initScene();
 		//new LevelLoader(this,this.mEngine,"test2");
 		//new LevelLoader(this,this.mEngine,"test");
-		new LevelLoader(this,this.mEngine,"template.tmx");
-		this.mario.createPlayer(32,32,this);
+		//LevelLoader ll = new LevelLoader(this,this.mEngine,"template.tmx");
+		LevelLoader ll = new LevelLoader(this,this.mEngine,"test.tmx");
+		int w = ll.getWidth();
+		int h = ll.getHeight();
+
+		this.camera.setBounds(0, 0,w,h);
+		this.camera.setBoundsEnabled(true);
+		this.mario.createPlayer(32,h-64,this);
 		this.camera.setChaseEntity(this.mario.Player);
 		this.scene.getChildByIndex(1).attachChild(this.mario.Player);
+
 		this.setupHUD();
 		return this.scene;
 	}
@@ -209,6 +223,25 @@ public class Game extends SimpleBaseGameActivity implements IAccelerationListene
 		});
 	}
 	//***********************************************************************************************************************
+	private IUpdateHandler createCollisionHandler(){
+		return new IUpdateHandler(){
+			@Override
+			public void onUpdate(float seconds){
+				if(killing){
+					((AnimatedSprite) toKill.getBody().getUserData()).setVisible(false);
+					toKill.getBody().setActive(false);
+					World.destroyBody(toKill.getBody());
+					toKill = null;
+					killing = false;
+					//((AnimatedSprite) i.getBody().getUserData()).setVisible(false);
+					//toDelete.remove(i);
+				}
+			}
+			@Override
+			public void reset(){}
+		};
+	}
+
 	private ContactListener createContactListener(){
 		ContactListener contactListener = new ContactListener(){
 			@Override
@@ -221,7 +254,18 @@ public class Game extends SimpleBaseGameActivity implements IAccelerationListene
 					}
 					if (x2.getUserData().toString() == "head" && x1.getUserData() != null &&  x1.getUserData().toString() == "bottom"){
 						hithead++;
-						Game.this.popup("hit head! count: "+hithead);
+						//Game.this.popup("hit head! count: "+hithead);
+						//toDelete.add(x1);
+						if(!killing){
+							toKill = x1;
+							killing = true;
+						}
+						/*
+						if (hithead % 2 == 0)
+							((AnimatedSprite) x1.getBody().getUserData()).setVisible(false);
+						else 
+							((AnimatedSprite) x1.getBody().getUserData()).setVisible(true);
+							*/
 
 					}
 				}
@@ -229,7 +273,7 @@ public class Game extends SimpleBaseGameActivity implements IAccelerationListene
 					if(x1.getUserData().toString() == "feet"){
 						mario.hitGround();
 					}
-					if (x1.getUserData().toString() == "feet" && x2.getUserData() != null &&  x2.getUserData().toString() == "bottom"){
+					if (x1.getUserData().toString() == "feet" && x2.getUserData() != null &&  x2.getUserData().toString() == "ground"){
 						Game.this.popup("hit feet");
 					}
 				}
@@ -301,6 +345,7 @@ public class Game extends SimpleBaseGameActivity implements IAccelerationListene
 		this.scene.setOnSceneTouchListener(this);
 		this.World = new PhysicsWorld(new Vector2(0, GRAVITY), false);
 		this.World.setContactListener(createContactListener());
+		this.scene.registerUpdateHandler(createCollisionHandler());
 		this.scene.registerUpdateHandler(this.World);
 		DebugRenderer debug = new DebugRenderer(this.World, this.getVertexBufferObjectManager());
 		this.scene.attachChild(debug);

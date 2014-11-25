@@ -41,15 +41,17 @@ public class Brick{
 		DIE = true;
 	}
 	public Brick(int x,int y,final Game parent){
-	//------------------------------------------------------------------
+		//------------------------------------------------------------------
 		BitmapTextureAtlasTextureRegionFactory.setAssetBasePath("gfx/");
 		this.PlayerAtlas = new BitmapTextureAtlas(parent.getTextureManager(),512,256,TextureOptions.DEFAULT);
 		this.BoxTexture = BitmapTextureAtlasTextureRegionFactory.createTiledFromAsset(
 				this.PlayerAtlas,parent,"blocks.png",0,0,16,5);
 		this.PlayerAtlas.load();
 		//------------------------------------------------------------------
+		//this.box = new Rectangle( x,y,32,32,parent.getVertexBufferObjectManager());
+		//box.setVisible(false);
+		//Body body = PhysicsFactory.createBoxBody(parent.World, box, BodyType.StaticBody, WALL_FIXTURE_DEF);
 		this.box = new AnimatedSprite(x,y,this.BoxTexture,parent.getVertexBufferObjectManager()){
-		//this.box = new AnimatedSprite(x,y,parent.rm.BlockTexture,parent.getVertexBufferObjectManager()){
 			@Override
 			protected void onManagedUpdate(final float seconds){
 				if(DIE){
@@ -130,7 +132,7 @@ public class Brick{
 			body.getFixtureList().get(2).setUserData("ground");
 			body.getFixtureList().get(3).setUserData("wall");
 			body.getFixtureList().get(4).setUserData("wall");
-			body.setUserData(this.box);
+			body.setUserData(this);
 			//body.setUserData(this.box);
 			parent.scene.getChildByIndex(1).attachChild(box);
 	}
