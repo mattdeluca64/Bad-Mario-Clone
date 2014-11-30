@@ -1,6 +1,6 @@
 package org.util;
-import org.util.constants.Collisions;
-import org.games.Game;
+
+import java.io.IOException;
 
 import org.andengine.audio.music.Music;
 import org.andengine.audio.music.MusicFactory;
@@ -16,29 +16,73 @@ import org.andengine.opengl.texture.atlas.bitmap.BitmapTextureAtlas;
 import org.andengine.opengl.texture.atlas.bitmap.BitmapTextureAtlasTextureRegionFactory;
 import org.andengine.opengl.texture.atlas.bitmap.BuildableBitmapTextureAtlas;
 import org.andengine.opengl.texture.atlas.bitmap.source.IBitmapTextureAtlasSource;
+import org.andengine.opengl.texture.atlas.buildable.builder.BlackPawnTextureAtlasBuilder;
+import org.andengine.opengl.texture.atlas.buildable.builder.ITextureAtlasBuilder.TextureAtlasBuilderException;
 import org.andengine.opengl.texture.region.ITextureRegion;
 import org.andengine.opengl.texture.region.ITiledTextureRegion;
 import org.andengine.opengl.texture.region.TextureRegion;
 import org.andengine.opengl.texture.region.TiledTextureRegion;
 import org.andengine.opengl.vbo.VertexBufferObjectManager;
 import org.andengine.util.debug.Debug;
+import org.games.Game;
 
 import android.graphics.Color;
 
-public class ResourcesManager{
+/**
+ * @author Mateusz Mysliwiec
+ * @author www.matim-dev.com
+ * @version 1.0
+ */
+public class ResourcesManager {
+	// ---------------------------------------------
+	// VARIABLES
+	// ---------------------------------------------
+
 	private static final ResourcesManager INSTANCE = new ResourcesManager();
 
-	/*
-	private static BitmapTextureAtlas ItemAtlas;
-	public static TiledTextureRegion BlockTexture;
+	public static Engine engine;
+	public static Game activity;
+	public static BoundCamera camera;
+	public static VertexBufferObjectManager vbo;
 
-	public void loadBrickGraphics(Game parent){
-		BitmapTextureAtlasTextureRegionFactory.setAssetBasePath("gfx/");
-		this.ItemAtlas = new BitmapTextureAtlas(parent.getTextureManager(),512,256,TextureOptions.DEFAULT);
-		this.BlockTexture = BitmapTextureAtlasTextureRegionFactory.createTiledFromAsset(
-				this.ItemAtlas,parent,"blocks.png",0,0,16,5);
-		this.ItemAtlas.load();
+	public Font font;
+
+	// ---------------------------------------------
+	// TEXTURES & TEXTURE REGIONS
+	// ---------------------------------------------
+		public static BitmapTextureAtlas PlayerAtlas;
+		public static TiledTextureRegion BoxTexture;
+	// ---------------------------------------------
+	public void loadGameResources() {
+		loadGameGraphics();
 	}
-	*/
-}
 
+	private void loadGameGraphics() {
+		//fill with atlas and xTextures
+		BitmapTextureAtlasTextureRegionFactory.setAssetBasePath("gfx/");
+		this.PlayerAtlas = new BitmapTextureAtlas(activity.getTextureManager(),512,256,TextureOptions.DEFAULT);
+		this.BoxTexture = BitmapTextureAtlasTextureRegionFactory.createTiledFromAsset(
+				this.PlayerAtlas,activity,"blocks.png",0,0,16,5);
+		this.PlayerAtlas.load();
+	}
+
+	public void unloadGameTextures() {
+		//Atlas.unload();
+	}
+
+	public static void prepareManager(Engine engine, Game activity,
+			BoundCamera camera, VertexBufferObjectManager vbo) {
+		getInstance().engine = engine;
+		getInstance().activity = activity;
+		getInstance().camera = camera;
+		getInstance().vbo = vbo;
+	}
+
+	// ---------------------------------------------
+	// GETTERS AND SETTERS
+	// ---------------------------------------------
+
+	public static ResourcesManager getInstance() {
+		return INSTANCE;
+	}
+}

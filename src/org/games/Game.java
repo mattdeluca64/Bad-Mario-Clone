@@ -125,13 +125,14 @@ public class Game extends SimpleBaseGameActivity implements IAccelerationListene
 	//***********************************************************************************************************
 	@Override
 	public void onCreateResources() {
+		ResourcesManager.prepareManager(mEngine, this, this.camera, getVertexBufferObjectManager());
+		ResourcesManager.getInstance().loadGameResources();
 		//-------------------------------------------------------------------------------------------------------
 		this.font = FontFactory.create(
 				this.getFontManager(), this.getTextureManager(), 256, 256, Typeface.create(Typeface.MONOSPACE, Typeface.NORMAL), 12);
 		this.font.load();
 		this.score = new Text(0, 0, this.font, "Score:0123456789",this.getVertexBufferObjectManager());
 		//-------------------------------------------------------------------------------------------------------
-		//rm.loadBrickGraphics(this);
 		this.mario = new Mario(this,this.mEngine);
 		//-------------------------------------------------------------------------------------------------------
 	}
@@ -144,16 +145,17 @@ public class Game extends SimpleBaseGameActivity implements IAccelerationListene
 	@Override
 	public Scene onCreateScene() {
 		this.initScene();
-		//new LevelLoader(this,this.mEngine,"test2");
-		//new LevelLoader(this,this.mEngine,"test");
+		LevelLoader ll = new LevelLoader(this,this.mEngine,"test2");
+		//LevelLoader ll = new LevelLoader(this,this.mEngine,"test");
 		//LevelLoader ll = new LevelLoader(this,this.mEngine,"template.tmx");
-		LevelLoader ll = new LevelLoader(this,this.mEngine,"test.tmx");
+		//LevelLoader ll = new LevelLoader(this,this.mEngine,"test.tmx");
 		int w = ll.getWidth();
 		int h = ll.getHeight();
-
 		this.camera.setBounds(0, 0,w,h);
+
 		this.camera.setBoundsEnabled(true);
-		this.mario.createPlayer(32,h-64,this);
+		this.mario.createPlayer(64,64,this);
+		//this.mario.createPlayer(32,h-64,this);
 		this.camera.setChaseEntity(this.mario.Player);
 		this.scene.getChildByIndex(1).attachChild(this.mario.Player);
 

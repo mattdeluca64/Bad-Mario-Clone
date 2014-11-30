@@ -38,7 +38,7 @@ public class Collisions{
 			1.0f, 0.0f, 0.45f, false, CATEGORYBIT_PLAYER, MASKBITS_PLAYER, (short)0);
 		//-------------------------
 	public static final FixtureDef BOTTOM_FIXTURE_DEF = PhysicsFactory.createFixtureDef(
-			0.0f, 0.4f, 0.00f, false, CATEGORYBIT_BOTTOM, MASKBITS_BOTTOM, (short)0);
+			0.0f, 0.9f, 0.00f, false, CATEGORYBIT_BOTTOM, MASKBITS_BOTTOM, (short)0);
 	//left/right use wall
 	//use ground for top..for now
 		//-------------------------

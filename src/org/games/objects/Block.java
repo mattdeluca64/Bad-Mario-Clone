@@ -30,14 +30,10 @@ import com.badlogic.gdx.physics.box2d.FixtureDef;
 import org.andengine.entity.sprite.AnimatedSprite;
 import org.andengine.entity.primitive.Rectangle;
 
-public class ItemBlock extends Block{
-	public ItemBlock(int x,int y,final Game parent){
-		super(x,y,parent);
-		this.box.animate(new long[]{200,200,200,200},20,23,true);
-		body = PhysicsFactory.createBoxBody(parent.World, box, BodyType.StaticBody, Collisions.WALL_FIXTURE_DEF);
-		//----------------------------------------------------------------------------------
-		body.getFixtureList().get(0).setUserData("note");
-		body.setUserData(this.box);
-		parent.scene.getChildByIndex(1).attachChild(box);
+public class Block{
+	public static Body body;
+	public static AnimatedSprite box;
+	public Block(int x, int y, Game parent){
+		this.box = new AnimatedSprite(x,y,parent.rm.getInstance().BoxTexture,parent.getVertexBufferObjectManager());
 	}
 }

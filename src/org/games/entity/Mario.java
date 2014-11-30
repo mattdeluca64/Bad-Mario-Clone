@@ -87,6 +87,7 @@ public class Mario{
 	private static int feetcontacts = 0;
 	private static boolean ONGROUND;
 	private static boolean JUMPING;
+	private static boolean JUMPBUTTON;
 	private static boolean RUNNING;
 	private static boolean SKIDDING;
 	private static boolean DIRECTION;
@@ -101,9 +102,12 @@ public class Mario{
 	private static final float MAXSPEED = 12.0f;
 													//450,4,1 good height
 	//for apply linear impulse
-	private static float JUMPFORCE = 5f;
-	private static final int CAP1 = 3;
-	private static final float JUMPFACTOR = 0.90f;
+	//private static float JUMPFORCE = 15f;
+	private static float JUMPFORCE = 5.0f;
+	private static final int CAP1 = 40;
+	//private static final int CAP1 = 3;
+	private static final float JUMPFACTOR = 1.42f;
+	//private static final float JUMPFACTOR = 0.90f;
 	//for apply force
 	//private static float JUMPFORCE = 200f;
 	//private static final int CAP1 = 20;
@@ -150,13 +154,13 @@ public class Mario{
 		shape.set(verts);
 		final PolygonShape shape1 = new PolygonShape();
 		final Vector2[] verts1 = new Vector2[]{
-			new Vector2(-0.25f,-0.3f),
-			new Vector2(-0.25f,-0.4f),
-			new Vector2(0.25f,-0.4f),
-			new Vector2(0.25f,-0.3f)};
+			new Vector2(-0.05f,-0.3f),
+			new Vector2(-0.05f,-0.4f),
+			new Vector2(0.05f,-0.4f),
+			new Vector2(0.05f,-0.3f)};
 		shape1.set(verts1);
 		//final FixtureDef fd = PhysicsFactory.createFixtureDef(0f,0f,0f);
-		Collisions.PLAYER_FIXTURE_DEF.shape = shape;
+		//Collisions.PLAYER_FIXTURE_DEF.shape = shape;
 		//final Fixture feet = this.PlayerBody.createFixture(Collisions.PLAYER_FIXTURE_DEF);
 		//shape.dispose();
 		//Collisions.PLAYER_FIXTURE_DEF.shape = shape1;
@@ -183,6 +187,13 @@ public class Mario{
 	//Ticker
 	private static void tick(){
 		//tick
+		if(!ONGROUND && !JUMPBUTTON && JUMPING){
+			//PlayerBody.applyLinearImpulse(new Vector2(0,-1*(PlayerBody.getLinearVelocity().y)),PlayerBody.getWorldCenter());
+			PlayerBody.applyForce(new Vector2(0,-4*(PlayerBody.getMass())*(PlayerBody.getLinearVelocity().y)),PlayerBody.getWorldCenter());
+			JUMPTIMER = CAP1;
+			JUMPING=false;
+			currentJUMPFORCE = 0;
+		}
 		if(JUMPING && JUMPTIMER != CAP1){
 			PlayerBody.applyLinearImpulse(new Vector2(0,currentJUMPFORCE),PlayerBody.getWorldCenter());
 			//PlayerBody.applyForce(new Vector2(0,currentJUMPFORCE),PlayerBody.getWorldCenter());
@@ -266,6 +277,8 @@ public class Mario{
 			return;
 		}else{
 			ONGROUND=true;
+			JUMPING=false;
+			JUMPTIMER=CAP1;
 		}
 		if(ONGROUND && !RUNNING && (LEFT || RIGHT)){
 			walk();
@@ -303,13 +316,15 @@ public class Mario{
 		}
 	}
 	public void Jump(boolean state){
-		if(!state)
-			JUMPING=false;
+		JUMPBUTTON=state;
+		//if(!state)
+		//	JUMPING=false;
 		if(!JUMPING && state && ONGROUND && feetcontacts>=1){
 			feetcontacts=0;
 			ONGROUND=false;
 			JUMPTIMER = 0;
 			currentJUMPFORCE = JUMPFORCE;
+			//currentJUMPFORCE = (JUMPFORCE / JUMPFACTOR);
 			Player.stopAnimation();
 			JumpSound.play();
 			JUMPING=true;

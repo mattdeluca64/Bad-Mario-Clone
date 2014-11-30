@@ -1,3 +1,9 @@
+----------
+TODO:
+	-MetaBlock Info
+	-Break Floor/Blocks into Multiple blocks/bodies
+	-brick block has just bottom/ground sensor
+----------
 This is a bad clone of mario using AndEngine, and its Box2D and TMX extensions
 
 Bugs/Things not working yet:
