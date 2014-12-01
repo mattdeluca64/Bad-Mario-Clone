@@ -457,7 +457,7 @@ public class Game extends SimpleBaseGameActivity implements IAccelerationListene
 					}
 				}
 				if(touch.isActionDown()){
-					Game.this.popup("");
+					Game.this.popup("vel - x: "+mario.PlayerBody.getLinearVelocity().x+" y: "+mario.PlayerBody.getLinearVelocity().y);
 				}
 				return true;
 			}
@@ -488,16 +488,44 @@ public class Game extends SimpleBaseGameActivity implements IAccelerationListene
 		this.hud.attachChild(this.score);
 		this.camera.setHUD(hud);
 	}
-	/*
-	@Override
-	public boolean onKeyDown(int key,KeyEvent event){
+		/*   i       37
+		 * j k l  38 39 40
+		 *-------------------------------
+		 * q w e r		45 51 33 46
+		 * a s d f		29 47 32 34
+		 */
+		/*
 		if(key == KeyEvent.KEYCODE_BACK){
 			startActivity(new Intent(Game.this, Menu.class));				
 			Game.this.finish();
 		}
+		*/
+	@Override
+	public boolean onKeyUp(int key,KeyEvent event){
+		if(key == 37){
+			mario.Jump(false);
+		}
+		if(key == 38){
+			mario.Left(false);
+		}
+		if(key == 40){
+			mario.Right(false);
+		}
 		return false;
 	}
-	*/
+	@Override
+	public boolean onKeyDown(int key,KeyEvent event){
+		if(key == 37){
+			mario.Jump(true);
+		}
+		if(key == 38){
+			mario.Left(true);
+		}
+		if(key == 40){
+			mario.Right(true);
+		}
+		return false;
+	}
 }
 /*
  *

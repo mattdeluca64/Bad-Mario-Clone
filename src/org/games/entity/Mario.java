@@ -320,7 +320,6 @@ public class Mario{
 		//if(!state)
 		//	JUMPING=false;
 		if(!JUMPING && state && ONGROUND && feetcontacts>=1){
-			feetcontacts=0;
 			ONGROUND=false;
 			JUMPTIMER = 0;
 			currentJUMPFORCE = JUMPFORCE;

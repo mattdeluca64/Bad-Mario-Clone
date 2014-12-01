@@ -165,14 +165,16 @@ public class LevelLoader{
 			this.COLS = this.width / 32;
 			this.ROWS = this.height / 32;
 			new Brick(this.width / 2,this.height / 2,parent);
+			new Brick(this.width / 2+32,this.height / 2,parent);
+			new Brick(this.width / 2-32,this.height / 2,parent);
 			new Coin(this.width/2,this.height / 2-32,parent,engine);
+			/*
 			//-------------
 			new Brick2(this.width/4,this.height / 4,parent);
 			new IceBrick(this.width/4+32,this.height / 4,parent);
 			new ShinyBrick(this.width/4-32,this.height / 4,parent);
 			new GreyBrick(this.width/4+64,this.height / 4,parent);
 			//-------------
-			/*
 			new Stone(this.width/2+32,this.height / 2+32,parent);
 			new Note(this.width/2+64,this.height / 2+32,parent);
 			new ItemBlock(this.width/2+32,this.height / 2+64,parent);

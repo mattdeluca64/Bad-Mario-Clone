@@ -6,6 +6,11 @@ TODO:
 ----------
 This is a bad clone of mario using AndEngine, and its Box2D and TMX extensions
 
+--------------------
+Top Bugs:
+--------------------
+-Jump too quickly doesn't jump minimum height && mario gets stuck with ONGROUND=false until jumps/falls
+--------------------
 Bugs/Things not working yet:
 	-horizontal line flickering in the background
 	-mario's fastest movement is glitchy - because of bad velocity capping?
